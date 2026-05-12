@@ -3,17 +3,19 @@ import { signupService, loginService, logoutService, refreshTokenService, checkA
 import { AuthenticatedRequest } from '../types/index.js'
 import env from '../config/env.js'
 
+const isProduction = env.NODE_ENV === 'production'
+
 const setCookies = (res: Response, accessToken: string, refreshToken: string): void => {
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'strict',
     maxAge: 15 * 60 * 1000,
   })
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'strict',
     maxAge: 7 * 24 * 60 * 60 * 1000,
   })
 }
@@ -93,8 +95,8 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'strict',
       maxAge: 15 * 60 * 1000,
     })
 
