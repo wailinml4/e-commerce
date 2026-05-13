@@ -96,11 +96,13 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
     const refreshToken = req.cookies.refreshToken
     const { accessToken } = await refreshTokenService(refreshToken)
 
+    // Set accessToken cookie with the same options used elsewhere
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'strict',
+      secure: true,
+      sameSite: 'none',
       maxAge: 15 * 60 * 1000,
+      path: '/',
     })
 
     res.status(200).json({
