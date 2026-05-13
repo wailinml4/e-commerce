@@ -1,26 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
 import { signupService, loginService, logoutService, refreshTokenService, checkAuthService } from '../services/authService.js'
 import { AuthenticatedRequest } from '../types/index.js'
-// Cookies are set with fixed, production-safe attributes. These are hardcoded
-// to ensure consistent behavior across environments (httpOnly, secure,
-// SameSite=None) which is required for cross-site auth flows when using
-// a proxy or when deployed behind HTTPS.
-const setCookies = (res: Response, accessToken: string, refreshToken: string): void => {
-  res.cookie('accessToken', accessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
-    maxAge: 15 * 60 * 1000,
-    path: '/',
-  })
-  res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    path: '/',
-  })
-}
+// Cookie options are set per-environment so cookies work on localhost during development
+// while remaining secure in production (SameSite=None + Secure for cross-site flows).
 
 export const signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -31,7 +13,21 @@ export const signup = async (req: Request, res: Response, next: NextFunction): P
       name,
     })
 
-    setCookies(res, accessToken, refreshToken)
+    // set cookies inline so dev/localhost works without HTTPS
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/',
+      maxAge: 15 * 60 * 1000,
+    })
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
 
     res.status(201).json({
       success: true,
@@ -56,7 +52,21 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       password,
     })
 
-    setCookies(res, accessToken, refreshToken)
+    // set cookies inline so dev/localhost works without HTTPS
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/',
+      maxAge: 15 * 60 * 1000,
+    })
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
 
     res.status(200).json({
       success: true,
@@ -79,8 +89,18 @@ export const logout = async (req: Request, res: Response, next: NextFunction): P
     await logoutService(refreshToken)
 
     // Clear using matching options so the browser actually removes the cookies
-    res.clearCookie('accessToken', { path: '/', httpOnly: true })
-    res.clearCookie('refreshToken', { path: '/', httpOnly: true })
+    res.clearCookie('accessToken', {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    })
+    res.clearCookie('refreshToken', {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    })
 
     res.status(200).json({
       success: true,
@@ -96,13 +116,13 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
     const refreshToken = req.cookies.refreshToken
     const { accessToken } = await refreshTokenService(refreshToken)
 
-    // Set accessToken cookie with the same options used elsewhere
+    // Set accessToken cookie inline
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 15 * 60 * 1000,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/',
+      maxAge: 15 * 60 * 1000,
     })
 
     res.status(200).json({
