@@ -19,6 +19,7 @@ import errorHandler from './middleware/errorHandler.js'
 import env from './config/env.js'
 
 const app = express()
+app.set('trust proxy', 1)
 
 const __dirname = path.resolve()
 
