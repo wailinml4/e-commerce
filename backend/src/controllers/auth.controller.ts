@@ -1,22 +1,24 @@
 import { Request, Response, NextFunction } from 'express'
 import { signupService, loginService, logoutService, refreshTokenService, checkAuthService } from '../services/authService.js'
 import { AuthenticatedRequest } from '../types/index.js'
-import env from '../config/env.js'
-
-const isProduction = env.NODE_ENV === 'production'
-
+// Cookies are set with fixed, production-safe attributes. These are hardcoded
+// to ensure consistent behavior across environments (httpOnly, secure,
+// SameSite=None) which is required for cross-site auth flows when using
+// a proxy or when deployed behind HTTPS.
 const setCookies = (res: Response, accessToken: string, refreshToken: string): void => {
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : 'strict',
+    secure: true,
+    sameSite: 'none',
     maxAge: 15 * 60 * 1000,
+    path: '/',
   })
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : 'strict',
+    secure: true,
+    sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000,
+    path: '/',
   })
 }
 
@@ -76,8 +78,9 @@ export const logout = async (req: Request, res: Response, next: NextFunction): P
     const refreshToken = req.cookies.refreshToken
     await logoutService(refreshToken)
 
-    res.clearCookie('accessToken')
-    res.clearCookie('refreshToken')
+    // Clear using matching options so the browser actually removes the cookies
+    res.clearCookie('accessToken', { path: '/', httpOnly: true })
+    res.clearCookie('refreshToken', { path: '/', httpOnly: true })
 
     res.status(200).json({
       success: true,
