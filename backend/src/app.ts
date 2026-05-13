@@ -26,7 +26,7 @@ app.use(helmet())
 if (env.NODE_ENV === 'production') {
   app.use(
     cors({
-      origin: env.FRONTEND_URL,
+      origin: [env.FRONTEND_URL, /\.vercel\.app$/],
       credentials: true,
     }),
   )
