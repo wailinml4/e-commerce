@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { searchProductsService } from '../services/product.service'
 import ProductCard from '../components/products/ProductCard'
-import { Search, SlidersHorizontal, X, Filter, ArrowRight } from 'lucide-react'
+import { Search, SlidersHorizontal, X } from 'lucide-react'
 import { CATEGORIES } from '../constants'
 import LoadingSpinner from '../components/shared/LoadingSpinner'
 import type { Product } from '../types'
@@ -180,7 +180,7 @@ const SearchPage = () => {
         {/* Results Area */}
         {loading ? (
           <div className="py-32">
-            <LoadingSpinner variant="products" />
+            <LoadingSpinner />
           </div>
         ) : (
           <div className="relative">

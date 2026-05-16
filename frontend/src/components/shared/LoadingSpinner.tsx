@@ -1,11 +1,7 @@
 import { motion } from 'framer-motion'
 import { Cpu, Loader2 } from 'lucide-react'
 
-interface LoadingSpinnerProps {
-  variant?: 'products' | 'detail' | 'orders' | 'default'
-}
-
-const LoadingSpinner = ({ variant = 'default' }: LoadingSpinnerProps) => {
+const LoadingSpinner = () => {
   return (
     <div className="flex flex-col items-center justify-center p-12 min-h-[400px]">
       <div className="relative">

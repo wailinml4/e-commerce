@@ -1,8 +1,6 @@
-import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import React from 'react'
 import axiosInstance from '../../config/axiosInstance'
-import { Users, Package, ShoppingCart, DollarSign, TrendingUp, Activity } from 'lucide-react'
+import { Users, Package, ShoppingCart, DollarSign, Activity } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import OrderAnalytics from '../orders/OrderAnalytics'
 

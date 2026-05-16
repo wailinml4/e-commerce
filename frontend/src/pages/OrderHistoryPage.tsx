@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useOrderStore } from '../stores/useOrderStore'
 import { useNavigate, Link } from 'react-router-dom'
 import LoadingSpinner from '../components/shared/LoadingSpinner'
-import { X, Package, Clock, CheckCircle, Truck, AlertCircle, ChevronRight, Ban } from 'lucide-react'
+import { Package, Clock, CheckCircle, Truck, AlertCircle, ChevronRight, Ban } from 'lucide-react'
 
 const OrderHistoryPage = () => {
   const { myOrders, getMyOrders, isLoading, cancelOrder } = useOrderStore()
@@ -47,7 +47,7 @@ const OrderHistoryPage = () => {
   }
 
   if (isLoading) {
-    return <LoadingSpinner variant="orders" />
+    return <LoadingSpinner />
   }
 
   return (

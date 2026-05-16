@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import {
   getDashboardMetricsService,
@@ -7,7 +6,7 @@ import {
   getDashboardInsightsService,
 } from '../services/analytics.service'
 import { getOrderByIdAdminService } from '../services/order.service'
-import { DollarSign, Package, ShoppingCart, RotateCcw, Users, TrendingUp, Activity } from 'lucide-react'
+import { DollarSign, Package, ShoppingCart, RotateCcw, Users, Activity } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import LoadingSpinner from '../components/shared/LoadingSpinner'
 import OrderDetailsModal from '../components/orders/OrderDetailsModal'
@@ -81,7 +80,7 @@ const AdminDashboardPage = () => {
   }
 
   if (isLoading) {
-    return <LoadingSpinner variant="dashboard" />
+    return <LoadingSpinner />
   }
 
   return (

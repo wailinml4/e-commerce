@@ -50,7 +50,7 @@ const LatestProducts = () => {
   }, [products])
 
   if (loading) {
-    return <LoadingSpinner variant="products" />
+    return <LoadingSpinner />
   }
 
   if (products.length === 0) {

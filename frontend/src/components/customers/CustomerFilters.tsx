@@ -1,4 +1,4 @@
-import { Shield, ArrowUpDown, X, RefreshCw, Search, Filter } from 'lucide-react'
+import { Shield, ArrowUpDown, X, RefreshCw, Search } from 'lucide-react'
 import { ROLE_FILTER_OPTIONS } from '../../constants'
 
 const sortOptions = [

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Package, Calendar, DollarSign, History, User } from 'lucide-react'
+import { X, Package, Calendar, DollarSign, History } from 'lucide-react'
 import { useUserStore } from '../../stores/useUserStore'
 import type { User as UserType, Order } from '../../types'
 import StatusBadge from '../shared/StatusBadge'

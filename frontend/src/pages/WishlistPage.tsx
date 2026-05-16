@@ -15,7 +15,7 @@ const WishlistPage = () => {
   }, [getWishlist])
 
   if (isLoading) {
-    return <LoadingSpinner variant="products" />
+    return <LoadingSpinner />
   }
 
   return (

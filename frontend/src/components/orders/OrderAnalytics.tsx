@@ -125,7 +125,7 @@ const OrderAnalytics = () => {
           </div>
           
           <div className="space-y-4">
-            {Object.entries(analytics.statusCounts).map(([status, count], i) => (
+            {Object.entries(analytics.statusCounts).map(([status, count]) => (
               <div key={status} className="group flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all">
                 <div className="flex items-center gap-4">
                     <div className="w-2 h-2 rounded-full bg-white/20 group-hover:bg-primary transition-colors" />

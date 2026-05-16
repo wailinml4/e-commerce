@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check, X, Box } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 import StatusBadge from '../shared/StatusBadge'
 import type { Order } from '../../types'
 

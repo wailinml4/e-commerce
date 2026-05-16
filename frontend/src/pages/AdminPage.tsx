@@ -13,14 +13,9 @@ import AdminProfile from '../components/admin/AdminProfile'
 import { Menu } from 'lucide-react'
 
 const AdminPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const activeTab = searchParams.get('tab') || 'analytics'
-
-  const handleTabChange = (tabId: string) => {
-    setSearchParams({ tab: tabId })
-    setMobileSidebarOpen(false)
-  }
 
   return (
     <div className="min-h-screen bg-[#0A0A0B] text-white selection:bg-primary/30 relative">

@@ -48,7 +48,7 @@ const ProductDetailPage = () => {
   }
 
   if (loading) {
-    return <LoadingSpinner variant="detail" />
+    return <LoadingSpinner />
   }
 
   if (!product) {

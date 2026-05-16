@@ -19,11 +19,6 @@ const CategoryPage = () => {
     await getProductsByCategory(category!, minPrice ? Number(minPrice) : undefined, maxPrice ? Number(maxPrice) : undefined, sort)
   }
 
-  const handleSortChange = (newSort: string) => {
-    setSort(newSort)
-    // Small delay to ensure state is updated if needed, though getProductsByCategory will use the new sort
-  }
-
   useEffect(() => {
     handleFilter()
   }, [category, sort]) // Re-run when category or sort changes
@@ -148,7 +143,7 @@ const CategoryPage = () => {
         {/* Results Grid */}
         {isLoading ? (
           <div className="py-24">
-            <LoadingSpinner variant="products" />
+            <LoadingSpinner />
           </div>
         ) : (
           <motion.div

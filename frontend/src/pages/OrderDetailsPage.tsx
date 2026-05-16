@@ -5,7 +5,7 @@ import { useOrderStore } from '../stores/useOrderStore'
 import LoadingSpinner from '../components/shared/LoadingSpinner'
 import type { Order, OrderItem } from '../types'
 import ReturnRequestModal from '../components/returns/ReturnRequestModal'
-import { ChevronLeft, Package, Calendar, CreditCard, User, AlertCircle, RefreshCcw } from 'lucide-react'
+import { ChevronLeft, Package, CreditCard, User, AlertCircle, RefreshCcw } from 'lucide-react'
 
 const OrderDetailsPage = () => {
   const { id } = useParams<{ id: string }>()
@@ -59,7 +59,7 @@ const OrderDetailsPage = () => {
   }
 
   if (isLoading || !order) {
-    return <LoadingSpinner variant="detail" />
+    return <LoadingSpinner />
   }
 
   return (

@@ -190,7 +190,7 @@ const ProductsList = () => {
         />
 
         {isLoading ? (
-          <LoadingSpinner variant="table" />
+          <LoadingSpinner />
         ) : totalItems === 0 ? (
           <div className="text-center py-12 text-gray-400">No products found</div>
         ) : (

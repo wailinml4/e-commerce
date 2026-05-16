@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronRight } from 'lucide-react'
-import StatusBadge from '../shared/StatusBadge'
 import type { Order, OrderStatus } from '../../types'
 
 interface OrderTableProps {

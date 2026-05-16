@@ -57,7 +57,7 @@ const PeopleAlsoBought = ({ productId }: PeopleAlsoBoughtProps) => {
     return () => cancelAnimationFrame(animationId)
   }, [recommendations])
 
-  if (isLoading) return <LoadingSpinner variant="products" />
+  if (isLoading) return <LoadingSpinner />
 
   if (recommendations.length === 0) {
     return null
