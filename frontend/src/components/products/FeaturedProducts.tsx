@@ -13,7 +13,7 @@ const FeaturedProducts = ({ featuredProducts }: { featuredProducts: Product[] })
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: 0.2 }}
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"
     >
       {featuredProducts.map((product: Product) => (
         <ProductCard key={product.id} product={product} />

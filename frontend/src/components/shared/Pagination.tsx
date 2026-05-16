@@ -1,3 +1,5 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+
 interface PaginationProps {
   currentPage: number
   totalPages: number
@@ -14,27 +16,32 @@ const Pagination = ({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
   const endItem = Math.min(currentPage * itemsPerPage, totalItems)
 
   return (
-    <div className={`flex justify-between items-center mt-6 px-6 ${className}`}>
-      <div className="text-sm text-gray-400">
-        Showing {startItem} - {endItem} of {totalItems} items
+    <div className={`flex flex-col sm:flex-row justify-between items-center mt-12 px-8 gap-6 ${className}`}>
+      <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+        Record <span className="text-white/60">{startItem}</span> - <span className="text-white/60">{endItem}</span> of <span className="text-white/60">{totalItems}</span> Index
       </div>
-      <div className="flex gap-2">
+      
+      <div className="flex items-center gap-4">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-3 py-1 bg-neutral-800 text-gray-200 rounded-lg hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-3 bg-white/5 text-white/40 rounded-2xl hover:bg-white/10 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-all border border-white/5"
         >
-          Previous
+          <ChevronLeft size={20} />
         </button>
-        <span className="px-3 py-1 text-gray-400">
-          {currentPage} / {totalPages}
-        </span>
+        
+        <div className="px-6 py-3 bg-white/5 rounded-2xl border border-white/5 min-w-[120px] text-center">
+            <span className="text-sm font-black tracking-widest text-white/80">
+              {currentPage} <span className="text-white/20 mx-2">/</span> {totalPages}
+            </span>
+        </div>
+
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-3 py-1 bg-neutral-800 text-gray-200 rounded-lg hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-3 bg-white/5 text-white/40 rounded-2xl hover:bg-white/10 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-all border border-white/5"
         >
-          Next
+          <ChevronRight size={20} />
         </button>
       </div>
     </div>

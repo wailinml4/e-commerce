@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { PlusCircle, Upload, Loader, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { PlusCircle, Upload, Loader, X, Box, Info, DollarSign, Layers } from 'lucide-react'
 import { useProductStore } from '../../stores/useProductStore'
 import { CATEGORIES } from '../../constants'
 import { useForm } from 'react-hook-form'
@@ -56,133 +56,171 @@ const CreateProductModal = ({ isOpen, onClose, onSuccess }: CreateProductModalPr
     reader.readAsDataURL(file)
   }
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose()
-    }
-  }
-
-  if (!isOpen) return null
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={handleBackdropClick}>
-      <motion.div
-        className="bg-neutral-950 rounded-lg max-w-xl w-full max-h-[90vh] overflow-hidden border border-neutral-800"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.2 }}
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-800">
-          <h2 className="text-xl font-semibold text-white">Create New Product</h2>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:text-white transition-colors">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <div className="p-6 overflow-y-auto max-h-[60vh]">
-          <form id="create-product-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Product Name</label>
-              <input
-                {...register('name')}
-                className="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-lg text-white focus:outline-none focus:border-gray-600"
-              />
-              {errors.name && <p className="text-sm text-red-400 mt-1">{errors.name.message}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
-              <textarea
-                {...register('description')}
-                rows={3}
-                className="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-lg text-white focus:outline-none focus:border-gray-600"
-              />
-              {errors.description && <p className="text-sm text-red-400 mt-1">{errors.description.message}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Price</label>
-              <input
-                {...register('price')}
-                type="number"
-                step="0.01"
-                min="0"
-                className="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-lg text-white focus:outline-none focus:border-gray-600"
-              />
-              {errors.price && <p className="text-sm text-red-400 mt-1">{errors.price.message}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Category</label>
-              <div className="relative">
-                <select
-                  {...register('category')}
-                  className="appearance-none w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-white/15 px-3 py-2.5 text-sm font-medium cursor-pointer pr-10"
-                >
-                  <option value="" className="bg-gray-900 text-gray-100">Select a category</option>
-                  {CATEGORIES.map(cat => (
-                    <option key={cat.slug} value={cat.slug} className="bg-gray-900 text-gray-100">
-                      {cat.label}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Image</label>
-              <div className="mt-1 flex items-center">
-                <input type="file" id="image" className="sr-only" accept="image/*" onChange={handleImageChange} required />
-                <label
-                  htmlFor="image"
-                  className="cursor-pointer bg-neutral-900 py-2 px-3 border border-neutral-800 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-300 hover:bg-neutral-800 focus:outline-none"
-                >
-                  <Upload className="h-5 w-5 inline-block mr-2" />
-                  Upload Image
-                </label>
-                {errors.image ? <p className="text-sm text-red-400 ml-3">{errors.image.message}</p> : null}
-                {watch('image') ? <span className="ml-3 text-sm text-gray-400">Image uploaded</span> : null}
-              </div>
-            </div>
-          </form>
-        </div>
-
-        <div className="px-6 py-4 border-t border-neutral-800 flex justify-end gap-3">
-          <button
-            type="button"
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={onClose}
-            className="px-4 py-2 bg-neutral-800 text-gray-200 rounded-lg hover:bg-neutral-700 transition-colors"
-            disabled={isLoading}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          />
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="relative w-full max-w-2xl bg-[#0A0A0B] border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            onClick={e => e.stopPropagation()}
           >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            form="create-product-form"
-            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <Loader className="h-5 w-5 animate-spin mr-2" />
-                Creating...
-              </>
-            ) : (
-              <>
-                <PlusCircle className="h-5 w-5 mr-2" />
-                Create Product
-              </>
-            )}
-          </button>
+            {/* Ambient Background Glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+
+            {/* Header */}
+            <div className="px-10 py-8 flex items-center justify-between border-b border-white/5 shrink-0 relative z-10">
+              <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-lg shadow-primary/10">
+                      <PlusCircle size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white tracking-tight">Create Product</h2>
+                    <p className="text-xs text-white/40 font-medium">Add a new item to your inventory registry.</p>
+                  </div>
+              </div>
+              <button onClick={onClose} className="p-3 rounded-xl bg-white/5 text-white/30 hover:text-white transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Form Content */}
+            <div className="p-10 overflow-y-auto custom-scrollbar relative z-10">
+              <form id="create-product-form" onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* Name */}
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 text-xs font-bold text-white/40 uppercase tracking-widest ml-1">
+                          <Info size={14} /> Product Name
+                      </label>
+                      <input
+                        {...register('name')}
+                        placeholder="e.g. Premium Silk Scarf"
+                        className="w-full px-6 py-4 bg-white/5 border border-white/5 rounded-2xl text-white font-medium placeholder:text-white/20 focus:outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10 transition-all"
+                      />
+                      {errors.name && <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider ml-1 mt-1">{errors.name.message}</p>}
+                    </div>
+
+                    {/* Price */}
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 text-xs font-bold text-white/40 uppercase tracking-widest ml-1">
+                          <DollarSign size={14} /> Price
+                      </label>
+                      <div className="relative">
+                          <span className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 font-bold">$</span>
+                          <input
+                            {...register('price')}
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="w-full px-10 py-4 bg-white/5 border border-white/5 rounded-2xl text-white font-medium placeholder:text-white/20 focus:outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10 transition-all"
+                          />
+                      </div>
+                      {errors.price && <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider ml-1 mt-1">{errors.price.message}</p>}
+                    </div>
+                </div>
+
+                {/* Description */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs font-bold text-white/40 uppercase tracking-widest ml-1">
+                      <Box size={14} /> Description
+                  </label>
+                  <textarea
+                    {...register('description')}
+                    rows={4}
+                    placeholder="Enter product story and specifications..."
+                    className="w-full px-6 py-4 bg-white/5 border border-white/5 rounded-2xl text-white font-medium placeholder:text-white/20 focus:outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10 transition-all resize-none"
+                  />
+                  {errors.description && <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider ml-1 mt-1">{errors.description.message}</p>}
+                </div>
+
+                {/* Category & Image Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 text-xs font-bold text-white/40 uppercase tracking-widest ml-1">
+                          <Layers size={14} /> Category
+                      </label>
+                      <div className="relative group">
+                        <select
+                          {...register('category')}
+                          className="appearance-none w-full bg-white/5 border border-white/5 rounded-2xl text-white/70 px-6 py-4 text-sm font-bold uppercase tracking-widest focus:outline-none focus:border-primary/40 transition-all cursor-pointer group-hover:bg-white/10"
+                        >
+                          <option value="" className="bg-[#111]">Select Category</option>
+                          {CATEGORIES.map(cat => (
+                            <option key={cat.slug} value={cat.slug} className="bg-[#111]">
+                              {cat.label}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-white/20">
+                           <X size={16} className="rotate-45" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 text-xs font-bold text-white/40 uppercase tracking-widest ml-1">
+                          <Upload size={14} /> Product Image
+                      </label>
+                      <div className="flex items-center">
+                        <input type="file" id="image" className="sr-only" accept="image/*" onChange={handleImageChange} required />
+                        <label
+                          htmlFor="image"
+                          className={`w-full cursor-pointer bg-white/5 py-4 px-6 border-2 border-dashed rounded-2xl text-sm font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-3 ${watch('image') ? 'border-primary/40 text-primary bg-primary/5' : 'border-white/10 text-white/40 hover:border-white/20 hover:text-white/60'}`}
+                        >
+                          <Upload size={18} />
+                          {watch('image') ? 'Image Uploaded' : 'Upload Image'}
+                        </label>
+                      </div>
+                      {errors.image && <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider ml-1 mt-1">{errors.image.message}</p>}
+                    </div>
+                </div>
+              </form>
+            </div>
+
+            {/* Footer */}
+            <div className="px-10 py-8 border-t border-white/5 flex justify-end gap-4 shrink-0 relative z-10">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-8 py-3 bg-white/5 text-white/60 rounded-xl font-bold text-sm hover:bg-white/10 hover:text-white transition-all"
+                disabled={isLoading}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="create-product-form"
+                className="px-8 py-3 bg-primary text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader size={18} className="animate-spin" />
+                    Initializing...
+                  </>
+                ) : (
+                  <>
+                    <PlusCircle size={18} />
+                    Create Product
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.div>
         </div>
-      </motion.div>
-    </div>
+      )}
+    </AnimatePresence>
   )
 }
 

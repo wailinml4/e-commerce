@@ -1,5 +1,4 @@
-import { X, RefreshCw, ArrowUpDown, Filter } from 'lucide-react'
-import SearchInput from '../shared/SearchInput'
+import { X, RefreshCw, ArrowUpDown, Filter, Search } from 'lucide-react'
 import { CATEGORIES } from '../../constants'
 
 interface ProductFiltersProps {
@@ -26,67 +25,71 @@ const ProductFilters = ({
   isLoading,
 }: ProductFiltersProps) => {
   return (
-    <div className="flex flex-col md:flex-row gap-3 mb-6">
-      <SearchInput value={searchTerm} onChange={onSearchChange} placeholder="Search by name or category..." />
-
-      <div className="relative">
-        <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300 h-4 w-4 z-10" />
-        <select
-          value={categoryFilter}
-          onChange={e => onCategoryChange(e.target.value)}
-          className="appearance-none bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-white/15 pl-10 pr-10 py-2.5 text-sm font-medium cursor-pointer"
-        >
-          <option value="all" className="bg-gray-900 text-gray-100">All Categories</option>
-          {CATEGORIES.map(cat => (
-            <option key={cat.slug} value={cat.slug} className="bg-gray-900 text-gray-100">
-              {cat.label}
-            </option>
-          ))}
-        </select>
-        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
+    <div className="flex flex-wrap items-center gap-4 mb-8">
+      {/* Search Input */}
+      <div className="flex-1 min-w-[280px] relative group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors" size={18} />
+          <input 
+            type="text" 
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search products..."
+            className="w-full bg-white/5 border border-white/5 pl-12 pr-4 py-2.5 rounded-xl text-white font-medium placeholder:text-white/20 focus:outline-none focus:border-primary/40 transition-all"
+          />
       </div>
 
-      <div className="relative">
-        <ArrowUpDown className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300 h-4 w-4 z-10" />
-        <select
-          value={sortBy}
-          onChange={e => onSortChange(e.target.value)}
-          className="appearance-none bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-white/15 pl-10 pr-10 py-2.5 text-sm font-medium cursor-pointer"
-        >
-          <option value="date-desc" className="bg-gray-900 text-gray-100">Newest</option>
-          <option value="date-asc" className="bg-gray-900 text-gray-100">Oldest</option>
-          <option value="name-asc" className="bg-gray-900 text-gray-100">Name: A-Z</option>
-          <option value="name-desc" className="bg-gray-900 text-gray-100">Name: Z-A</option>
-          <option value="price-asc" className="bg-gray-900 text-gray-100">Price: Low-High</option>
-          <option value="price-desc" className="bg-gray-900 text-gray-100">Price: High-Low</option>
-        </select>
-        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
+      <div className="flex items-center gap-3">
+          <div className="relative">
+            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" size={16} />
+            <select
+              value={categoryFilter}
+              onChange={e => onCategoryChange(e.target.value)}
+              className="appearance-none bg-white/5 border border-white/5 rounded-xl text-white/70 pl-10 pr-10 py-2.5 text-sm font-medium focus:outline-none focus:border-primary/40 transition-all cursor-pointer"
+            >
+              <option value="all" className="bg-[#111]">All Categories</option>
+              {CATEGORIES.map(cat => (
+                <option key={cat.slug} value={cat.slug} className="bg-[#111]">
+                  {cat.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="relative">
+            <ArrowUpDown className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" size={16} />
+            <select
+              value={sortBy}
+              onChange={e => onSortChange(e.target.value)}
+              className="appearance-none bg-white/5 border border-white/5 rounded-xl text-white/70 pl-10 pr-10 py-2.5 text-sm font-medium focus:outline-none focus:border-primary/40 transition-all cursor-pointer"
+            >
+              <option value="date-desc" className="bg-[#111]">Newest First</option>
+              <option value="date-asc" className="bg-[#111]">Oldest First</option>
+              <option value="name-asc" className="bg-[#111]">Name: A-Z</option>
+              <option value="name-desc" className="bg-[#111]">Name: Z-A</option>
+              <option value="price-asc" className="bg-[#111]">Price: Low to High</option>
+              <option value="price-desc" className="bg-[#111]">Price: High to Low</option>
+            </select>
+          </div>
       </div>
 
-      <button
-        onClick={onClear}
-        className="bg-white/10 backdrop-blur-md border border-white/20 text-gray-100 px-4 py-2.5 rounded-lg hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-200 shadow-lg flex items-center font-medium"
-      >
-        <X className="h-4 w-4 mr-2" />
-        Clear
-      </button>
+      <div className="flex items-center gap-2 ml-auto">
+          <button
+            onClick={onClear}
+            className="p-2.5 rounded-xl bg-white/5 border border-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all"
+            title="Clear Filters"
+          >
+            <X size={18} />
+          </button>
 
-      <button
-        onClick={onRefresh}
-        className="bg-white/10 backdrop-blur-md border border-white/20 text-gray-100 px-4 py-2.5 rounded-lg hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-200 shadow-lg flex items-center font-medium"
-        disabled={isLoading}
-      >
-        <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-        Refresh
-      </button>
+          <button
+            onClick={onRefresh}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all disabled:opacity-50"
+            disabled={isLoading}
+          >
+            <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
+            Refresh
+          </button>
+      </div>
     </div>
   )
 }

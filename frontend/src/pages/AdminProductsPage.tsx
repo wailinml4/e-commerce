@@ -13,28 +13,32 @@ const AdminProductsPage = () => {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <motion.h1
-          className="text-3xl font-semibold"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          Products
-        </motion.h1>
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+    <div className="space-y-8 pb-20">
+      {/* Header Section */}
+      <div className="flex items-center justify-between">
+        <div>
+            <h1 className="text-3xl font-bold tracking-tight text-white/90">Products</h1>
+            <p className="text-sm text-white/40 mt-1">Manage and monitor your product inventory.</p>
+        </div>
+
+        <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+          className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-primary/20 hover:brightness-110 active:scale-95"
         >
-          <PlusCircle className="h-5 w-5" />
+          <PlusCircle size={20} />
           Add Product
-        </motion.button>
+        </button>
       </div>
-      <ProductsList key={refreshKey} />
+
+      {/* Main Content Area */}
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white/[0.02] border border-white/5 rounded-3xl p-6"
+      >
+          <ProductsList key={refreshKey} />
+      </motion.div>
+
       <CreateProductModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSuccess={handleProductCreated} />
     </div>
   )

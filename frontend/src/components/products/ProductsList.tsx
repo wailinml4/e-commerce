@@ -171,12 +171,12 @@ const ProductsList = () => {
 
   return (
     <motion.div
-      className="bg-neutral-950 shadow-lg rounded-lg overflow-hidden border border-neutral-800"
+      className="relative"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="p-6">
+      <div className="">
         <ProductFilters
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}

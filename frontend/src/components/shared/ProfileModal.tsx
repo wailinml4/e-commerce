@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Mail, Save, Shield, User, X } from 'lucide-react'
+import { Mail, Save, Shield, User, X, Loader } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import type { AxiosError } from 'axios'
@@ -29,6 +29,7 @@ const ProfileModal = ({ isOpen, onClose, variant = 'customer' }: ProfileModalPro
   } = useForm<UpdateProfileInput>({
     resolver: zodResolver(updateProfileSchema),
   })
+  
   const isAdmin = variant === 'admin'
 
   useEffect(() => {
@@ -44,7 +45,7 @@ const ProfileModal = ({ isOpen, onClose, variant = 'customer' }: ProfileModalPro
       toast.success('Profile updated successfully')
       onClose()
     } catch (error) {
-      toast.error((error as AxiosError<{ message: string }>).response?.data?.message || 'Failed to update profile')
+      toast.error((error as AxiosError<{ message: string }>).response?.data?.message || 'Update failed')
     } finally {
       setIsSaving(false)
     }
@@ -52,97 +53,107 @@ const ProfileModal = ({ isOpen, onClose, variant = 'customer' }: ProfileModalPro
 
   if (!user) return null
 
-  const panelClass = isAdmin
-    ? 'w-full max-w-2xl rounded-lg border border-neutral-800 bg-neutral-950 p-6 text-gray-100 shadow-2xl'
-    : 'w-full max-w-2xl rounded-lg bg-white p-6 text-gray-900 shadow-2xl'
-  const mutedTextClass = isAdmin ? 'text-gray-400' : 'text-gray-500'
-  const summaryClass = isAdmin
-    ? 'mb-6 grid gap-4 rounded-lg border border-neutral-800 bg-neutral-900 p-4 sm:grid-cols-3'
-    : 'mb-6 grid gap-4 rounded-lg bg-gray-50 p-4 sm:grid-cols-3'
-  const iconClass = isAdmin ? 'h-5 w-5 text-gray-400' : 'h-5 w-5 text-gray-500'
-  const labelClass = isAdmin ? 'mb-2 block text-sm font-medium text-gray-300' : 'mb-2 block text-sm font-medium text-gray-700'
-  const inputClass = isAdmin
-    ? 'w-full rounded-lg border border-neutral-800 bg-neutral-900 px-4 py-3 text-gray-100 transition-colors focus:border-gray-500 focus:outline-none'
-    : 'w-full rounded-full border border-gray-200 bg-white px-4 py-3 text-gray-900 transition-colors focus:border-gray-900 focus:outline-none'
-  const closeButtonClass = isAdmin
-    ? 'rounded-lg p-2 text-gray-400 transition-colors hover:bg-neutral-900 hover:text-white'
-    : 'rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900'
-  const submitButtonClass = isAdmin
-    ? 'flex w-full items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 font-medium text-black transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-60'
-    : 'flex w-full items-center justify-center gap-2 rounded-full bg-gray-900 px-6 py-3 font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60'
-
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onMouseDown={onClose}
-        >
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <motion.div
-            className={panelClass}
-            initial={{ opacity: 0, y: 20, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            transition={{ duration: 0.2 }}
-            onMouseDown={event => event.stopPropagation()}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onMouseDown={onClose}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          />
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className={`relative w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col border ${isAdmin ? 'bg-[#0A0A0B] border-white/10' : 'bg-white border-slate-200 text-slate-900'}`}
+            onMouseDown={e => e.stopPropagation()}
           >
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-semibold">Profile</h2>
-                <p className={`text-sm ${mutedTextClass}`}>Manage your account details</p>
+            {/* Header */}
+            <div className={`px-10 py-8 flex items-center justify-between border-b shrink-0 relative z-10 ${isAdmin ? 'border-white/5' : 'border-slate-100'}`}>
+              <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg ${isAdmin ? 'bg-primary/10 border border-primary/20 text-primary shadow-primary/10' : 'bg-primary/5 border border-primary/10 text-primary'}`}>
+                      <User size={24} />
+                  </div>
+                  <div>
+                    <h2 className={`text-2xl font-bold tracking-tight ${isAdmin ? 'text-white' : 'text-slate-900'}`}>Edit Profile</h2>
+                    <p className={`text-sm font-medium ${isAdmin ? 'text-white/40' : 'text-slate-400'}`}>Update your account information.</p>
+                  </div>
               </div>
-              <button type="button" onClick={onClose} className={closeButtonClass} aria-label="Close profile">
+              <button onClick={onClose} className={`p-3 rounded-xl transition-colors ${isAdmin ? 'bg-white/5 text-white/30 hover:text-white' : 'bg-slate-50 text-slate-400 hover:text-slate-900'}`}>
                 <X size={20} />
               </button>
             </div>
-            <div className={summaryClass}>
-              <div className="flex items-center gap-3">
-                <User className={iconClass} />
-                <div>
-                  <p className={`text-xs ${mutedTextClass}`}>Name</p>
-                  <p className="font-medium">{user.name || '-'}</p>
+
+            {/* Content */}
+            <div className="p-10 space-y-8 relative z-10">
+                {/* Info Bar */}
+                <div className={`grid grid-cols-1 sm:grid-cols-3 gap-6 p-6 rounded-[2rem] border ${isAdmin ? 'bg-white/[0.02] border-white/5' : 'bg-slate-50 border-slate-100'}`}>
+                    <div className="space-y-1">
+                        <p className={`text-[10px] font-bold uppercase tracking-widest ${isAdmin ? 'text-white/20' : 'text-slate-400'}`}>Current Name</p>
+                        <p className={`text-sm font-bold ${isAdmin ? 'text-white/90' : 'text-slate-700'}`}>{user.name || 'N/A'}</p>
+                    </div>
+                    <div className="space-y-1">
+                        <p className={`text-[10px] font-bold uppercase tracking-widest ${isAdmin ? 'text-white/20' : 'text-slate-400'}`}>Email Address</p>
+                        <p className={`text-sm font-bold ${isAdmin ? 'text-white/90' : 'text-slate-700'}`}>{user.email || 'N/A'}</p>
+                    </div>
+                    <div className="space-y-1">
+                        <p className={`text-[10px] font-bold uppercase tracking-widest ${isAdmin ? 'text-white/20' : 'text-slate-400'}`}>Account Role</p>
+                        <div className="flex items-center gap-2">
+                            <Shield size={14} className="text-primary" />
+                            <p className={`text-sm font-bold capitalize ${isAdmin ? 'text-white/90' : 'text-slate-700'}`}>{user.role}</p>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Mail className={iconClass} />
-                <div>
-                  <p className={`text-xs ${mutedTextClass}`}>Email</p>
-                  <p className="font-medium">{user.email || '-'}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Shield className={iconClass} />
-                <div>
-                  <p className={`text-xs ${mutedTextClass}`}>Role</p>
-                  <p className="font-medium capitalize">{user.role || '-'}</p>
-                </div>
-              </div>
+
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                        <label className={`text-[10px] font-bold uppercase tracking-widest ml-1 ${isAdmin ? 'text-white/40' : 'text-slate-500'}`}>
+                          Update Name
+                        </label>
+                        <div className="relative">
+                            <User size={18} className={`absolute left-6 top-1/2 -translate-y-1/2 ${isAdmin ? 'text-white/20' : 'text-slate-300'}`} />
+                            <input 
+                                type="text" 
+                                {...register('name')} 
+                                className={`w-full pl-14 pr-6 py-4 rounded-2xl border transition-all focus:outline-none focus:ring-4 ${isAdmin ? 'bg-white/5 border-white/5 text-white focus:border-primary/40 focus:ring-primary/10 placeholder:text-white/20' : 'bg-white border-slate-200 text-slate-900 focus:border-primary focus:ring-primary/5 shadow-sm'}`} 
+                            />
+                        </div>
+                        {errors.name && <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider ml-1 mt-1">{errors.name.message}</p>}
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className={`text-[10px] font-bold uppercase tracking-widest ml-1 ${isAdmin ? 'text-white/40' : 'text-slate-500'}`}>
+                          Update Email
+                        </label>
+                        <div className="relative">
+                            <Mail size={18} className={`absolute left-6 top-1/2 -translate-y-1/2 ${isAdmin ? 'text-white/20' : 'text-slate-300'}`} />
+                            <input 
+                                type="email" 
+                                {...register('email')} 
+                                className={`w-full pl-14 pr-6 py-4 rounded-2xl border transition-all focus:outline-none focus:ring-4 ${isAdmin ? 'bg-white/5 border-white/5 text-white focus:border-primary/40 focus:ring-primary/10 placeholder:text-white/20' : 'bg-white border-slate-200 text-slate-900 focus:border-primary focus:ring-primary/5 shadow-sm'}`} 
+                            />
+                        </div>
+                        {errors.email && <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider ml-1 mt-1">{errors.email.message}</p>}
+                      </div>
+                  </div>
+
+                  <button 
+                    type="submit" 
+                    disabled={isSaving} 
+                    className={`flex w-full items-center justify-center gap-3 py-5 rounded-2xl font-bold text-lg transition-all shadow-xl active:scale-95 disabled:opacity-50 ${isAdmin ? 'bg-primary text-white hover:brightness-110 shadow-primary/20' : 'bg-slate-900 text-white hover:bg-primary shadow-slate-900/10'}`}
+                  >
+                    {isSaving ? <Loader className="animate-spin" size={20} /> : <Save size={20} />}
+                    {isSaving ? 'Updating Profile...' : 'Save Changes'}
+                  </button>
+                </form>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div>
-                <label className={labelClass} htmlFor="profile-name">
-                  Full Name
-                </label>
-                <input id="profile-name" type="text" {...register('name')} className={inputClass} />
-                {errors.name && <p className="text-sm text-red-400 mt-1">{errors.name.message}</p>}
-              </div>
-              <div>
-                <label className={labelClass} htmlFor="profile-email">
-                  Email Address
-                </label>
-                <input id="profile-email" type="email" {...register('email')} className={inputClass} />
-                {errors.email && <p className="text-sm text-red-400 mt-1">{errors.email.message}</p>}
-              </div>
-              <button type="submit" disabled={isSaving} className={submitButtonClass}>
-                <Save size={18} />
-                {isSaving ? 'Saving...' : 'Save Changes'}
-              </button>
-            </form>
           </motion.div>
-        </motion.div>
+        </div>
       )}
     </AnimatePresence>
   )

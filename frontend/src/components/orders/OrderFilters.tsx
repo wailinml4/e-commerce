@@ -1,13 +1,11 @@
-import { Calendar, ArrowUpDown, X, RefreshCw } from 'lucide-react'
-import SearchInput from '../shared/SearchInput'
-import SelectFilter from '../shared/SelectFilter'
+import { Calendar, ArrowUpDown, X, RefreshCw, Search, Filter } from 'lucide-react'
 import { ORDER_STATUS_OPTIONS, DATE_RANGE_OPTIONS } from '../../constants'
 
 const sortOptions = [
-  { value: 'date-desc', label: 'Date: Newest' },
-  { value: 'date-asc', label: 'Date: Oldest' },
-  { value: 'amount-desc', label: 'Amount: Highest' },
-  { value: 'amount-asc', label: 'Amount: Lowest' },
+  { value: 'date-desc', label: 'Newest First' },
+  { value: 'date-asc', label: 'Oldest First' },
+  { value: 'amount-desc', label: 'Price: High to Low' },
+  { value: 'amount-asc', label: 'Price: Low to High' },
 ]
 
 interface OrderFiltersProps {
@@ -48,48 +46,102 @@ const OrderFilters = ({
   const showCustomDate = dateRange === 'custom'
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 mb-6 flex-wrap">
-      <SearchInput value={searchTerm} onChange={onSearchChange} placeholder="Search orders..." className="md:w-64" />
+    <div className="flex flex-wrap items-center gap-4 mb-8">
+      {/* Search Input */}
+      <div className="flex-1 min-w-[280px] relative group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors" size={18} />
+          <input 
+            type="text" 
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search orders..."
+            className="w-full bg-white/5 border border-white/5 pl-12 pr-4 py-2.5 rounded-xl text-white font-medium placeholder:text-white/20 focus:outline-none focus:border-primary/40 transition-all"
+          />
+      </div>
 
-      <SelectFilter value={statusFilter} onChange={onStatusChange} options={ORDER_STATUS_OPTIONS} />
+      <div className="flex items-center gap-3">
+          <div className="relative">
+            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" size={16} />
+            <select
+              value={statusFilter}
+              onChange={e => onStatusChange(e.target.value)}
+              className="appearance-none bg-white/5 border border-white/5 rounded-xl text-white/70 pl-10 pr-10 py-2.5 text-sm font-medium focus:outline-none focus:border-primary/40 transition-all cursor-pointer"
+            >
+              <option value="all" className="bg-[#111]">All Statuses</option>
+              {ORDER_STATUS_OPTIONS.map(opt => (
+                <option key={opt.value} value={opt.value} className="bg-[#111]">
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      <SelectFilter value={dateRange} onChange={onDateRangeChange} options={DATE_RANGE_OPTIONS} icon={Calendar} />
+          <div className="relative">
+            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" size={16} />
+            <select
+              value={dateRange}
+              onChange={e => onDateRangeChange(e.target.value)}
+              className="appearance-none bg-white/5 border border-white/5 rounded-xl text-white/70 pl-10 pr-10 py-2.5 text-sm font-medium focus:outline-none focus:border-primary/40 transition-all cursor-pointer"
+            >
+              {DATE_RANGE_OPTIONS.map(opt => (
+                <option key={opt.value} value={opt.value} className="bg-[#111]">
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="relative">
+            <ArrowUpDown className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" size={16} />
+            <select
+              value={sortBy}
+              onChange={e => onSortChange(e.target.value)}
+              className="appearance-none bg-white/5 border border-white/5 rounded-xl text-white/70 pl-10 pr-10 py-2.5 text-sm font-medium focus:outline-none focus:border-primary/40 transition-all cursor-pointer"
+            >
+              {sortOptions.map(opt => (
+                <option key={opt.value} value={opt.value} className="bg-[#111]">
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+      </div>
+
+      <div className="flex items-center gap-2 ml-auto">
+          <button
+            onClick={onClear}
+            className="p-2.5 rounded-xl bg-white/5 border border-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all"
+            title="Clear Filters"
+          >
+            <X size={18} />
+          </button>
+
+          <button
+            onClick={onRefresh}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all disabled:opacity-50"
+            disabled={isLoading}
+          >
+            <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
+            Refresh
+          </button>
+      </div>
 
       {showCustomDate && (
-        <div className="flex gap-2">
+        <div className="w-full flex gap-4 mt-2">
           <input
             type="date"
             value={customStartDate}
             onChange={e => onCustomStartChange(e.target.value)}
-            className="bg-neutral-900 text-gray-200 px-3 py-2 rounded-lg border border-neutral-800 focus:outline-none focus:border-gray-600"
+            className="bg-white/5 border border-white/5 text-white/70 px-4 py-2 rounded-xl focus:outline-none focus:border-primary/40"
           />
           <input
             type="date"
             value={customEndDate}
             onChange={e => onCustomEndChange(e.target.value)}
-            className="bg-neutral-900 text-gray-200 px-3 py-2 rounded-lg border border-neutral-800 focus:outline-none focus:border-gray-600"
+            className="bg-white/5 border border-white/5 text-white/70 px-4 py-2 rounded-xl focus:outline-none focus:border-primary/40"
           />
         </div>
       )}
-
-      <SelectFilter value={sortBy} onChange={onSortChange} options={sortOptions} icon={ArrowUpDown} />
-
-      <button
-        onClick={onClear}
-        className="bg-white/10 backdrop-blur-md border border-white/20 text-gray-100 px-4 py-2.5 rounded-lg hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-200 shadow-lg flex items-center font-medium"
-      >
-        <X className="h-4 w-4 mr-2" />
-        Clear
-      </button>
-
-      <button
-        onClick={onRefresh}
-        className="bg-white/10 backdrop-blur-md border border-white/20 text-gray-100 px-4 py-2.5 rounded-lg hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-200 shadow-lg flex items-center font-medium"
-        disabled={isLoading}
-      >
-        <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-        Refresh
-      </button>
     </div>
   )
 }

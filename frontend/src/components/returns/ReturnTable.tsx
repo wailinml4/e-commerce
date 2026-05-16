@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion'
-import { Check, X } from 'lucide-react'
-import { ANIMATION_DURATION } from '../../constants'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Check, X, Box } from 'lucide-react'
 import StatusBadge from '../shared/StatusBadge'
 import type { Order } from '../../types'
 
@@ -13,66 +12,71 @@ interface ReturnTableProps {
 const ReturnTable = ({ returns, onApprove, onReject }: ReturnTableProps) => {
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-neutral-800">
-        <thead className="bg-neutral-900">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Order ID</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Customer</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Reason</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Total</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+      <table className="w-full text-left">
+        <thead>
+          <tr className="border-b border-white/5">
+            <th className="px-6 py-4 text-[11px] font-bold text-white/30 uppercase tracking-widest">Order ID</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-white/30 uppercase tracking-widest">Customer</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-white/30 uppercase tracking-widest">Date</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-white/30 uppercase tracking-widest">Reason</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-white/30 uppercase tracking-widest">Amount</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-white/30 uppercase tracking-widest">Status</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-white/30 uppercase tracking-widest text-right">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-neutral-800">
-          {returns.map((order: Order) => (
-            <motion.tr
-              key={order.id}
-              className="hover:bg-neutral-900"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: ANIMATION_DURATION.NORMAL }}
-            >
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">#{order.id.slice(-8)}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{order.user?.name || order.user?.email || 'Unknown'}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                {order.returnRequestedAt ? new Date(order.returnRequestedAt).toLocaleDateString() : 'N/A'}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 capitalize">{order.returnReason}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${order.totalAmount.toFixed(2)}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <StatusBadge status={order.returnStatus ?? 'none'} />
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                {order.returnStatus === 'requested' && (
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={e => {
-                        e.stopPropagation()
-                        onApprove(order.id)
-                      }}
-                      className="text-green-400 hover:text-green-300 p-1"
-                      title="Approve"
-                      aria-label="Approve return"
-                    >
-                      <Check className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={e => {
-                        e.stopPropagation()
-                        onReject(order.id)
-                      }}
-                      className="text-red-400 hover:text-red-300 p-1"
-                      title="Reject"
-                      aria-label="Reject return"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
+        <tbody className="divide-y divide-white/5">
+          <AnimatePresence mode="popLayout">
+            {returns.map((order: Order) => (
+              <motion.tr
+                key={order.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="group hover:bg-white/[0.03] transition-colors"
+              >
+                <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-white/60">#{order.id.slice(-8).toUpperCase()}</td>
+                <td className="px-6 py-5 whitespace-nowrap">
+                  <div className="text-sm font-semibold text-white/90">{order.user?.name || 'Unknown'}</div>
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-white/40 font-medium">
+                  {order.returnRequestedAt ? new Date(order.returnRequestedAt).toLocaleDateString() : 'N/A'}
+                </td>
+                <td className="px-6 py-5">
+                  <span className="text-xs font-medium text-white/50 capitalize bg-white/5 px-2 py-1 rounded-lg">
+                      {order.returnReason}
+                  </span>
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm font-bold text-white/90">
+                  ${order.totalAmount.toFixed(2)}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap">
+                  <StatusBadge status={order.returnStatus ?? 'none'} variant="spatial" />
+                </td>
+                <td className="px-6 py-5 text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    {order.returnStatus === 'requested' && (
+                      <>
+                        <button
+                          onClick={() => onApprove(order.id)}
+                          className="p-2 rounded-xl bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all border border-emerald-500/20"
+                          title="Approve"
+                        >
+                          <Check size={16} />
+                        </button>
+                        <button
+                          onClick={() => onReject(order.id)}
+                          className="p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
+                          title="Reject"
+                        >
+                          <X size={16} />
+                        </button>
+                      </>
+                    )}
                   </div>
-                )}
-              </td>
-            </motion.tr>
-          ))}
+                </td>
+              </motion.tr>
+            ))}
+          </AnimatePresence>
         </tbody>
       </table>
     </div>

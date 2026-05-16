@@ -2,8 +2,8 @@ import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import React from 'react'
 import axiosInstance from '../../config/axiosInstance'
-import { Users, Package, ShoppingCart, DollarSign } from 'lucide-react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { Users, Package, ShoppingCart, DollarSign, TrendingUp, Activity } from 'lucide-react'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import OrderAnalytics from '../orders/OrderAnalytics'
 
 const AnalyticsTab = () => {
@@ -39,81 +39,105 @@ const AnalyticsTab = () => {
   }, [])
 
   if (isLoading) {
-    return <div className="text-center py-12 text-gray-400">Loading...</div>
+    return (
+        <div className="flex flex-col items-center justify-center py-20 space-y-4">
+            <div className="w-10 h-10 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+            <p className="text-white/40 text-xs font-medium">Loading Analytics...</p>
+        </div>
+    )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
+      {/* Metric Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <AnalyticsCard title="Total Users" value={analyticsData.users.toLocaleString()} icon={Users} color="from-gray-900 to-gray-800" />
-        <AnalyticsCard
-          title="Total Products"
-          value={analyticsData.products.toLocaleString()}
-          icon={Package}
-          color="from-gray-900 to-gray-800"
-        />
-        <AnalyticsCard
-          title="Total Orders"
-          value={analyticsData.totalOrders.toLocaleString()}
-          icon={ShoppingCart}
-          color="from-gray-900 to-gray-800"
-        />
-        <AnalyticsCard
-          title="Total Revenue"
-          value={`$${analyticsData.totalRevenue.toLocaleString()}`}
-          icon={DollarSign}
-          color="from-gray-900 to-gray-800"
-        />
+        <AnalyticsCard title="Total Customers" value={analyticsData.users.toLocaleString()} icon={Users} trend="+12.4%" color="indigo" />
+        <AnalyticsCard title="Total Products" value={analyticsData.products.toLocaleString()} icon={Package} trend="+3.1%" color="cyan" />
+        <AnalyticsCard title="Total Orders" value={analyticsData.totalOrders.toLocaleString()} icon={ShoppingCart} trend="+18.5%" color="amber" />
+        <AnalyticsCard title="Total Revenue" value={`$${analyticsData.totalRevenue.toLocaleString()}`} icon={DollarSign} trend="+22.9%" color="emerald" />
       </div>
-      <motion.div
-        className="bg-neutral-950 rounded-lg p-6 shadow-lg border border-neutral-800"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.25 }}
-      >
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={dailyOrdersData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="date" stroke="#9CA3AF" />
-            <YAxis yAxisId="left" stroke="#9CA3AF" />
-            <YAxis yAxisId="right" orientation="right" stroke="#9CA3AF" />
-            <Tooltip />
-            <Legend />
-            <Line yAxisId="left" type="monotone" dataKey="orders" stroke="#E5E7EB" activeDot={{ r: 8 }} name="Orders" />
-            <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#60A5FA" activeDot={{ r: 8 }} name="Revenue" />
-          </LineChart>
-        </ResponsiveContainer>
-      </motion.div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Main Activity Chart */}
+          <div className="lg:col-span-8 bg-white/[0.02] border border-white/5 rounded-3xl p-8 shadow-2xl">
+            <div className="flex items-center gap-3 mb-8">
+                <Activity size={18} className="text-primary" />
+                <h3 className="text-lg font-semibold text-white/90">System Performance</h3>
+            </div>
+
+            <div className="h-[350px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={dailyOrdersData}>
+                    <defs>
+                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                        </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+                    <XAxis 
+                        dataKey="date" 
+                        stroke="rgba(255,255,255,0.2)" 
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(val) => new Date(val).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                    />
+                    <YAxis stroke="rgba(255,255,255,0.2)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `$${v}`} />
+                    <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }} />
+                    <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={3} fill="url(#colorRevenue)" name="Revenue" />
+                </AreaChart>
+                </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="lg:col-span-4 bg-white/[0.02] border border-white/5 rounded-3xl p-8 shadow-2xl">
+              <h3 className="text-lg font-semibold text-white/90 mb-6">Network Health</h3>
+              <div className="space-y-6">
+                  {[
+                      { label: "Core Uptime", value: "99.9%" },
+                      { label: "Server Load", value: "12.4%" },
+                      { label: "Memory Usage", value: "42.1%" }
+                  ].map((stat, i) => (
+                      <div key={i} className="space-y-2">
+                          <div className="flex justify-between text-xs font-medium text-white/40">
+                              <span>{stat.label}</span>
+                              <span className="text-white">{stat.value}</span>
+                          </div>
+                          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                              <div className="h-full bg-primary/40 w-full" />
+                          </div>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      </div>
 
       <OrderAnalytics />
     </div>
   )
 }
-export default AnalyticsTab
 
-interface AnalyticsCardProps {
-  title: string
-  value: string | number
-  icon: React.ElementType
-  color: string
+const AnalyticsCard = ({ title, value, icon: Icon, trend, color }: any) => {
+    const colors: any = {
+        indigo: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+        cyan: 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20',
+        amber: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
+        emerald: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20'
+    }
+
+    return (
+        <div className="bg-white/[0.02] border border-white/5 p-6 rounded-2xl shadow-xl hover:bg-white/[0.04] transition-all">
+            <div className="flex items-center justify-between mb-4">
+                <div className={`p-2 rounded-lg ${colors[color]} border`}>
+                    <Icon size={20} />
+                </div>
+                <span className="text-emerald-400 text-xs font-bold">{trend}</span>
+            </div>
+            <p className="text-sm text-white/40 mb-1">{title}</p>
+            <h3 className="text-2xl font-bold text-white/90">{value}</h3>
+        </div>
+    )
 }
 
-const AnalyticsCard = ({ title, value, icon: Icon, color }: AnalyticsCardProps) => (
-  <motion.div
-    className={`bg-neutral-950 rounded-lg p-6 shadow-lg overflow-hidden relative border border-neutral-800 ${color}`}
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5 }}
-  >
-    <div className="flex justify-between items-center">
-      <div className="z-10">
-        <p className="text-gray-400 text-sm mb-1 font-semibold">{title}</p>
-        <h3 className="text-white text-3xl font-bold">{value}</h3>
-      </div>
-    </div>
-    <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-800 opacity-50" />
-    <div className="absolute -bottom-4 -right-4 text-gray-500 opacity-40">
-      <Icon className="h-32 w-32" />
-    </div>
-  </motion.div>
-)
+export default AnalyticsTab

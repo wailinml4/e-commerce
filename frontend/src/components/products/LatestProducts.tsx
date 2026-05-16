@@ -65,7 +65,7 @@ const LatestProducts = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: 0.2 }}
-      className="flex gap-6 overflow-x-hidden"
+      className="flex gap-10 overflow-x-hidden"
       style={{ scrollbarWidth: 'none' }}
       ref={scrollRef}
     >

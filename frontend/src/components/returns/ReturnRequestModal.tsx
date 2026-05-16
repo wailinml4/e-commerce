@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion'
-import { X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { X, RotateCcw, AlertCircle } from 'lucide-react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -25,8 +25,6 @@ const ReturnRequestModal = ({ isOpen, onClose, onSubmit }: ReturnRequestModalPro
     if (!isOpen) reset()
   }, [isOpen, reset])
 
-  if (!isOpen) return null
-
   const internalSubmit = (values: { returnReason: string; returnDescription?: string }) => {
     onSubmit({
       returnReason: values.returnReason,
@@ -41,69 +39,108 @@ const ReturnRequestModal = ({ isOpen, onClose, onSubmit }: ReturnRequestModalPro
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <motion.div
-        className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-lg border border-gray-200"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.2 }}
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-900">Request Return</h3>
-          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit(internalSubmit)} className="space-y-4">
-          <div>
-            <label className="block text-gray-300 text-sm font-medium mb-2">Return Reason</label>
-            <div className="relative">
-              <select
-                {...register('returnReason')}
-                className="appearance-none w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-white/15 px-4 py-2.5 text-sm font-medium cursor-pointer pr-10"
-              >
-                <option value="" className="bg-gray-900 text-gray-100">Select a reason</option>
-                <option value="defective" className="bg-gray-900 text-gray-100">Defective Product</option>
-                <option value="wrong_item" className="bg-gray-900 text-gray-100">Wrong Item</option>
-                <option value="not_as_described" className="bg-gray-900 text-gray-100">Not as Described</option>
-                <option value="changed_mind" className="bg-gray-900 text-gray-100">Changed Mind</option>
-                <option value="other" className="bg-gray-900 text-gray-100">Other</option>
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleClose}
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+          />
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col border border-slate-100"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="px-10 py-8 flex items-center justify-between border-b border-slate-50 shrink-0 relative z-10">
+              <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-500 shadow-lg shadow-orange-500/5">
+                      <RotateCcw size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Return Request</h2>
+                    <p className="text-xs text-slate-400 font-medium">Initiate a product return protocol.</p>
+                  </div>
               </div>
+              <button onClick={handleClose} className="p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-slate-900 transition-colors">
+                <X size={20} />
+              </button>
             </div>
-            {errors.returnReason && <p className="text-sm text-red-400 mt-1">{errors.returnReason.message}</p>}
-          </div>
 
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-2">Description</label>
-            <textarea
-              {...register('returnDescription')}
-              className="w-full bg-white text-gray-900 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 h-32"
-              placeholder="Please provide details about your return request..."
-            ></textarea>
-            {errors.returnDescription && <p className="text-sm text-red-500 mt-1">{errors.returnDescription.message}</p>}
-          </div>
+            {/* Form Content */}
+            <div className="p-10 relative z-10">
+              <form onSubmit={handleSubmit(internalSubmit)} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                    Return Reason
+                  </label>
+                  <div className="relative group">
+                    <select
+                      {...register('returnReason')}
+                      className="appearance-none w-full bg-slate-50 border border-slate-100 rounded-2xl text-slate-700 px-6 py-4 text-sm font-bold uppercase tracking-widest focus:outline-none focus:border-primary/40 transition-all cursor-pointer group-hover:bg-slate-100"
+                    >
+                      <option value="">Select a reason</option>
+                      <option value="defective">Defective Product</option>
+                      <option value="wrong_item">Wrong Item</option>
+                      <option value="not_as_described">Not as Described</option>
+                      <option value="changed_mind">Changed Mind</option>
+                      <option value="other">Other</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-6 pointer-events-none text-slate-300">
+                        <X size={16} className="rotate-45" />
+                    </div>
+                  </div>
+                  {errors.returnReason && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1 mt-1">{errors.returnReason.message}</p>}
+                </div>
 
-          <div className="flex justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-            >
-              Cancel
-            </button>
-            <button type="submit" className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
-              Submit Request
-            </button>
-          </div>
-        </form>
-      </motion.div>
-    </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                    Additional Details
+                  </label>
+                  <textarea
+                    {...register('returnDescription')}
+                    rows={4}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl text-slate-700 px-6 py-4 text-sm font-medium focus:outline-none focus:border-primary/40 transition-all placeholder:text-slate-300 resize-none"
+                    placeholder="Tell us more about the issue..."
+                  />
+                  {errors.returnDescription && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1 mt-1">{errors.returnDescription.message}</p>}
+                </div>
+
+                <div className="flex flex-col gap-3 pt-4">
+                    <button
+                        type="submit"
+                        className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-primary transition-all shadow-xl shadow-slate-900/10 active:scale-95"
+                    >
+                        Submit Return Request
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleClose}
+                        className="w-full py-4 bg-slate-50 text-slate-500 rounded-2xl font-bold text-sm hover:bg-slate-100 transition-all"
+                    >
+                        Cancel
+                    </button>
+                </div>
+              </form>
+            </div>
+            
+            {/* Disclaimer */}
+            <div className="px-10 py-6 bg-slate-50 border-t border-slate-100 flex items-start gap-3">
+                <AlertCircle size={16} className="text-slate-300 mt-0.5" />
+                <p className="text-[10px] font-medium text-slate-400 leading-relaxed uppercase tracking-widest">
+                    Our team will review your request within 24-48 hours. Returns are subject to our standard terms and conditions.
+                </p>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   )
 }
 

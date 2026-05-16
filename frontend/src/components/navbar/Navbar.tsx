@@ -81,11 +81,12 @@ const Navbar = () => {
       transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="fixed top-6 left-0 right-0 z-50 px-4"
     >
-      <div className="bg-white/80 backdrop-blur-xl shadow-lg rounded-full px-6 py-3 flex items-center justify-between w-full max-w-6xl mx-auto border border-white/20">
+      <div className="spatial-panel px-6 py-3 flex items-center justify-between w-full max-w-6xl mx-auto">
         {/* Logo */}
-        <Link to="/" className="text-lg font-medium text-gray-900 hover:text-gray-700 transition-colors tracking-tight">
+        <Link to="/" className="text-2xl font-bold text-slate-900 hover:text-primary transition-colors tracking-tighter">
           nova
         </Link>
+
 
         {/* Center Navigation */}
         <nav className="hidden md:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2">
@@ -93,7 +94,7 @@ const Navbar = () => {
             <Link
               key={category}
               to={`/category/${category}`}
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm text-app-muted hover:text-slate-900 transition-colors font-medium"
             >
               {capitalizeCategory(category)}
             </Link>
@@ -115,7 +116,7 @@ const Navbar = () => {
               <button
                 type="button"
                 onClick={() => setIsProfileModalOpen(true)}
-                className="p-2 text-gray-700 transition-colors hover:text-gray-900"
+                className="p-2 text-app-muted transition-colors hover:text-slate-900"
                 aria-label="Open profile"
               >
                 <NavProfileIcon delay={0.4} asIcon />
@@ -123,7 +124,7 @@ const Navbar = () => {
               <button
                 type="button"
                 onClick={logout}
-                className="p-2 text-gray-700 transition-colors hover:text-gray-900"
+                className="p-2 text-app-muted transition-colors hover:text-slate-900"
                 aria-label="Log out"
               >
                 <LogOut size={20} />
@@ -152,7 +153,7 @@ const Navbar = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30"
+              className="fixed inset-0 bg-black/60 backdrop-blur-md z-30"
               onClick={() => setIsSearchModalOpen(false)}
             />
 
@@ -167,7 +168,7 @@ const Navbar = () => {
                 mass: 0.8,
                 velocity: 0.5,
               }}
-              className="fixed inset-x-0 top-0 bg-white z-40 shadow-lg pt-24 px-4 pb-8"
+              className="fixed inset-x-0 top-0 bg-app-bg/80 backdrop-blur-2xl z-40 border-b border-white/10 pt-24 px-4 pb-8"
             >
               <div className="container mx-auto max-w-7xl">
                 <form onSubmit={handleSearch} className="relative">
@@ -179,7 +180,7 @@ const Navbar = () => {
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
                       placeholder="Search nova"
-                      className="w-full py-5 pl-14 pr-12 text-xl border-b border-gray-200 focus:outline-none focus:border-gray-400 transition-colors duration-200"
+                      className="w-full py-5 pl-14 pr-12 text-2xl bg-transparent text-slate-900 border-b border-slate-100 focus:outline-none focus:border-primary transition-colors duration-500 placeholder:text-slate-300"
                       autoComplete="off"
                     />
                     {searchQuery && (

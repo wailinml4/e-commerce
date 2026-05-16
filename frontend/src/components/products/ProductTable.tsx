@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion'
-import { Edit, Trash, Star } from 'lucide-react'
-import { ANIMATION_DURATION } from '../../constants'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Edit, Trash2, Star } from 'lucide-react'
 import StatusBadge from '../shared/StatusBadge'
 import type { Product } from '../../types'
 
@@ -15,78 +14,88 @@ interface ProductTableProps {
 const ProductTable = ({ products, onEdit, onDelete, onToggleFeatured, onToggleStatus }: ProductTableProps) => {
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-neutral-800">
-        <thead className="bg-neutral-900">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Product</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Price</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Category</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Featured</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+      <table className="w-full text-left">
+        <thead>
+          <tr className="border-b border-white/5">
+            <th className="px-6 py-4 text-[11px] font-bold text-white/30 uppercase tracking-widest">Product</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-white/30 uppercase tracking-widest">Price</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-white/30 uppercase tracking-widest">Category</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-white/30 uppercase tracking-widest">Status</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-white/30 uppercase tracking-widest">Featured</th>
+            <th className="px-6 py-4 text-[11px] font-bold text-white/30 uppercase tracking-widest text-right">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-neutral-800">
-          {products.map((product: Product) => (
-            <motion.tr
-              key={product.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: ANIMATION_DURATION.NORMAL }}
-              className="hover:bg-neutral-900"
-            >
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 h-10 w-10">
-                    <img className="h-10 w-10 rounded-full object-cover" src={product.image} alt={product.name} />
+        <tbody className="divide-y divide-white/5">
+          <AnimatePresence mode="popLayout">
+            {products.map((product: Product) => (
+              <motion.tr
+                key={product.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="group hover:bg-white/[0.03] transition-colors"
+              >
+                {/* Product Info */}
+                <td className="px-6 py-5">
+                  <div className="flex items-center gap-4">
+                    <div className="h-10 w-10 rounded-lg overflow-hidden border border-white/10 shrink-0 bg-white/5">
+                        <img className="h-full w-full object-cover" src={product.image} alt={product.name} />
+                    </div>
+                    <div className="text-sm font-semibold text-white/90">{product.name}</div>
                   </div>
-                  <div className="ml-4">
-                    <div className="text-sm text-gray-200">{product.name}</div>
+                </td>
+
+                {/* Price */}
+                <td className="px-6 py-5">
+                  <span className="text-sm font-medium text-white/70">${Number(product.price).toFixed(2)}</span>
+                </td>
+
+                {/* Category */}
+                <td className="px-6 py-5">
+                  <span className="text-[11px] font-bold text-white/40 uppercase tracking-wider">{product.category}</span>
+                </td>
+
+                {/* Status */}
+                <td className="px-6 py-5">
+                  <button
+                    onClick={() => onToggleStatus(product.id)}
+                    className="hover:scale-105 active:scale-95 transition-transform"
+                    title="Toggle status"
+                  >
+                    <StatusBadge status={product.status || 'active'} variant="spatial" />
+                  </button>
+                </td>
+
+                {/* Featured */}
+                <td className="px-6 py-5">
+                  <button
+                    onClick={() => onToggleFeatured(product.id)}
+                    className={`p-2 rounded-xl transition-all ${product.isFeatured ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20 shadow-lg shadow-amber-500/10' : 'text-white/20 hover:text-white/40'}`}
+                  >
+                    <Star size={18} fill={product.isFeatured ? 'currentColor' : 'none'} />
+                  </button>
+                </td>
+
+                {/* Actions */}
+                <td className="px-6 py-5 text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      onClick={() => onEdit(product)}
+                      className="p-2 rounded-xl bg-white/5 text-white/40 hover:bg-primary/10 hover:text-primary transition-all border border-white/5"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button
+                      onClick={() => onDelete(product.id)}
+                      className="p-2 rounded-xl bg-white/5 text-white/40 hover:bg-red-500/10 hover:text-red-500 transition-all border border-white/5"
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{Number.isFinite(Number(product.price)) ? `$${Number(product.price).toFixed(2)}` : '-'}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{product.category.charAt(0).toUpperCase() + product.category.slice(1)}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <button
-                  onClick={() => onToggleStatus(product.id)}
-                  className="cursor-pointer"
-                  title="Click to toggle status"
-                >
-                  <StatusBadge status={product.status || 'active'} />
-                </button>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <button
-                  onClick={() => onToggleFeatured(product.id)}
-                  className={`p-1 rounded transition-colors ${product.isFeatured ? 'text-yellow-400 hover:text-yellow-300' : 'text-gray-500 hover:text-yellow-400'}`}
-                  title={product.isFeatured ? 'Remove from featured' : 'Set as featured'}
-                >
-                  <Star className="h-5 w-5" fill={product.isFeatured ? 'currentColor' : 'none'} />
-                </button>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => onEdit(product)}
-                    className="text-blue-400 hover:text-blue-300 p-1"
-                    title="Edit Product"
-                    aria-label="Edit product"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => onDelete(product.id)}
-                    className="text-red-400 hover:text-red-300 p-1"
-                    title="Delete Product"
-                    aria-label="Delete product"
-                  >
-                    <Trash className="h-4 w-4" />
-                  </button>
-                </div>
-              </td>
-            </motion.tr>
-          ))}
+                </td>
+              </motion.tr>
+            ))}
+          </AnimatePresence>
         </tbody>
       </table>
     </div>
